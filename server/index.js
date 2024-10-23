@@ -8,13 +8,23 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect(process.env.MONGO_URI).then(()=> {
-    console.log("DB is connected");
-})
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log("DB is connected");
+});
 app.use(express.json());
 app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`);
-})
+  console.log(`Server is running on ${PORT}`);
+});
 
-app.use('/api/user', userRoutes);
-app.use('/api/auth', authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/auth", authRoutes);
+
+app.use((err, req, res, next) => {
+  const statusCode = err.message || 500;
+  const message = err.message || "Internal server Error";
+  res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
+});
